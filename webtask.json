@@ -1,13 +1,20 @@
 {
-  "title": "Auth0 Extension Boilerplate",
-  "name": "auth0-extension-boilerplate",
-  "version": "1.0.0",
+  "title": "Auth0 Slack MFA",
+  "name": "auth0-slack-mfa",
+  "version": "0.0.1",
   "author": "auth0",
-  "description": "This is a Hello World extension",
+  "description": "This extension gives the ability to add multifactor authentication using Slack.",
   "type": "application",
-  "repository": "https://github.com/auth0/auth0-extension-boilerplate",
+  "repository": "https://github.com/auth0/auth0-slack-mfa",
   "keywords": [
     "auth0",
-    "extension"
-  ]
+    "extension",
+    "mfa",
+    "slack"
+  ],
+  "auth0": {
+    "createClient": true,
+    "onUninstallPath": "/.extensions/on-uninstall",
+    "scopes": "read:rules create:rules update:rules"
+  }
 }
