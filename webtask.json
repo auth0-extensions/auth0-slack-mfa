@@ -5,6 +5,8 @@
   "author": "auth0",
   "description": "This extension gives the ability to add multifactor authentication using Slack.",
   "type": "application",
+  //"docsUrl": "https://auth0.com/docs/extensions/slack-mfa",
+  //"logoUrl": "https://cdn.auth0.com/extensions/auth0-slack-mfa/assets/logo.svg
   "repository": "https://github.com/auth0/auth0-slack-mfa",
   "keywords": [
     "auth0",
@@ -14,7 +16,18 @@
   ],
   "auth0": {
     "createClient": true,
-    "onUninstallPath": "/.extensions/on-uninstall",
     "scopes": "read:rules create:rules update:rules"
+  },
+  "secrets": {
+    "SLACK_API_TOKEN": {
+      "example": "Slack API Token",
+      "description": "Your Slack API token.",
+      "required": true
+    },
+    "MONGO_CONNECTION_STRING": {
+      "example": "Slack API Token",
+      "description": "Your MongoDB connection string.",
+      "required": true
+    }
   }
 }
