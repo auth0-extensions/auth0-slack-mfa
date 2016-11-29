@@ -1,0 +1,36 @@
+{
+  "name": "auth0-slack-mfa",
+  "version": "0.0.1",
+  "description": "Auth0 extension for Multifactor Authentication with Slack",
+  "main": "index.js",
+  "scripts": {
+    "start": "wt-bundle server.js -o ./build/bundle.js && node ./build/bundle.js",
+    "bundle": "wt-bundle webtask.js -o ./build/bundle.js"
+  },
+  "keywords": [
+    "auth0",
+    "extension"
+  ],
+  "author": "Shawn G Meyer",
+  "license": "MIT",
+  "dependencies": {
+    "auth0-oauth2-express": "1.2.0",
+    "bluebird": "2.9.26",
+    "body-parser": "1.12.4",
+    "express": "4.14.0",
+    "jsonwebtoken": "5.0.0",
+    "mongodb": "2.0.33",
+    "querystring": "native",
+    "request": "2.27.0",
+    "uuid": "2.0.1",
+    "webtask-tools": "^1.2.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/auth0-extensions/auth0-slack-mfa.git"
+  },
+  "bugs": {
+    "url": "https://github.com/auth0-extensions/auth0-slack-mfa/issues"
+  },
+  "homepage": "https://github.com/auth0-extensions/auth0-slack-mfa#readme"
+}
