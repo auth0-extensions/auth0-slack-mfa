@@ -20,7 +20,8 @@
     "SLACK_API_TOKEN": {
       "example": "Slack API Token",
       "description": "Your Slack API token.",
-      "required": true
+      "required": true,
+      "type": "password"
     },
     "MONGO_CONNECTION_STRING": {
       "example": "Slack API Token",
