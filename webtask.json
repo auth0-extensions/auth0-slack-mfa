@@ -5,8 +5,6 @@
   "author": "auth0",
   "description": "This extension gives the ability to add multifactor authentication using Slack.",
   "type": "application",
-  //"docsUrl": "https://auth0.com/docs/extensions/slack-mfa",
-  //"logoUrl": "https://cdn.auth0.com/extensions/auth0-slack-mfa/assets/logo.svg
   "repository": "https://github.com/auth0/auth0-slack-mfa",
   "keywords": [
     "auth0",

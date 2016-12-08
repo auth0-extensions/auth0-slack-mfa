@@ -4,28 +4,17 @@
   "description": "Auth0 extension for Multifactor Authentication with Slack",
   "main": "index.js",
   "scripts": {
-    "clean": "rimraf dist",
-    "start": "wt-bundle server.js -o ./build/bundle.js && node ./build/bundle.js",
-    "bundle": "wt-bundle webtask.js -o ./build/bundle.js"
+    "clean": "rimraf build",
+    "bundle": "webpack --config webpack.wt.config.js"
   },
   "keywords": [
     "auth0",
-    "extension"
+    "extension",
+    "slack",
+    "mfa"
   ],
   "author": "Shawn G Meyer",
   "license": "MIT",
-  "dependencies": {
-    "auth0-oauth2-express": "1.2.0",
-    "bluebird": "2.9.26",
-    "body-parser": "1.12.4",
-    "express": "4.14.0",
-    "jsonwebtoken": "5.0.0",
-    "mongodb": "2.0.33",
-    "querystring": "native",
-    "request": "2.27.0",
-    "uuid": "2.0.1",
-    "webtask-tools": "^1.2.0"
-  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/auth0-extensions/auth0-slack-mfa.git"
@@ -34,7 +23,19 @@
     "url": "https://github.com/auth0-extensions/auth0-slack-mfa/issues"
   },
   "homepage": "https://github.com/auth0-extensions/auth0-slack-mfa#readme",
+  "dependencies": {
+    "auth0-oauth2-express": "^1.2.0",
+    "express": "^4.14.0",
+    "json-loader": "^0.5.4",
+    "mongodb": "^2.2.14",
+    "webtask-tools": "^3.1.1"
+  },
   "devDependencies": {
-    "rimraf": "^2.5.4"
+    "jade": "^1.11.0",
+    "jade-loader": "^0.8.0",
+    "react": "^15.4.1",
+    "request-promise": "^4.1.1",
+    "rimraf": "^2.5.4",
+    "webpack": "^1.14.0"
   }
 }
