@@ -1,32 +1,42 @@
 {
-  "title": "Auth0 Slack MFA",
+  "title": "Slack MFA",
   "name": "auth0-slack-mfa",
   "version": "0.0.1",
   "author": "auth0",
   "description": "This extension gives the ability to add multifactor authentication using Slack.",
   "type": "application",
-  "repository": "https://github.com/auth0/auth0-slack-mfa",
+  "useHashName": false,
+  "initialUrlPath": "/admins/login",
+  "uninstallConfirmMessage": "Do you really want to uninstall this extension?",
+  "repository": "https://github.com/auth0-extensions/auth0-slack-mfa",
   "keywords": [
     "auth0",
     "extension",
-    "mfa",
-    "slack"
+    "slack",
+    "mfa"
   ],
   "auth0": {
     "createClient": true,
-    "scopes": "read:rules create:rules update:rules"
+    "onInstallPath": "/.extensions/on-install",
+    "onUninstallPath": "/.extensions/on-uninstall",
+    "scopes": "read:clients delete:clients read:rules create:rules update:rules delete:rules"
   },
   "secrets": {
     "SLACK_API_TOKEN": {
       "example": "Slack API Token",
       "description": "Your Slack API token.",
-      "required": true,
-      "type": "password"
+      "required": true
     },
     "MONGO_CONNECTION_STRING": {
       "example": "Slack API Token",
       "description": "Your MongoDB connection string.",
       "required": true
+    },
+    "SIGNING_SECRET": {
+      "example": "",
+      "description": "The secret used to sign the JWT's used by this extension.",
+      "required": true,
+      "type": "password"
     }
   }
 }

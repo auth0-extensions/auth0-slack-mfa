@@ -1,37 +1,34 @@
-var express    = require('express');
-var bodyParser = require('body-parser');
-var auth0      = require('auth0-oauth2-express');
-var Webtask    = require('webtask-tools');
-var app        = express();
+const path = require('path');
+const nconf = require('nconf');
+const logger = require('./server/lib/logger');
 
-app.use(auth0({
-  scopes: 'update:users'
-}));
-
-// var controllers = [
-//   require('./controllers/cancel'),
-//   require('./controllers/enroll'),
-//   require('./controllers/mfa'),
-//   require('./controllers/verify'),
-//   require('./controllers/meta.js')
-// ];
-
-app.use(bodyParser.urlencoded({ extended: false }));
-//app.use('/', controllers);
-
-app.get('/', function (req, res) {
-  res.send('Dummy bits');
+// Initialize babel.
+require('babel-core/register')({
+  ignore: /node_modules/,
+  sourceMaps: !(process.env.NODE_ENV === 'production')
 });
+require('babel-polyfill');
 
-app.use(function (req, res, next) {
-  var err = new Error('Not Found');
-  err.status = 404;
-  next(err);
+// Initialize configuration.
+nconf
+  .argv()
+  .env()
+  .file(path.join(__dirname, './server/config.json'))
+  .defaults({
+    NODE_ENV: 'development',
+    HOSTING_ENV: 'default',
+    PORT: 3001,
+    WT_URL: 'http://localhost:3000'
+  });
+
+// Start the server.
+const app = require('./server')((key) => nconf.get(key), null);
+
+const port = nconf.get('PORT');
+app.listen(port, (error) => {
+  if (error) {
+    logger.error(error);
+  } else {
+    logger.info(`Listening on http://localhost:${port}.`);
+  }
 });
-
-app.use(function (err, req, res, next) {
-  console.log('Application Error Handler: ' + err + '\r\nStack: \r\n' + err.stack);
-  res.status(err.status || 500).send("Oh no!  This is pretty embarrassing").end();
-});
-
-module.exports = app;

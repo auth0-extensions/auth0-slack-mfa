@@ -32,3 +32,8 @@ node_modules
 .DS_Store
 
 npm-debug.log
+dist
+.nyc_output
+assets/app/*
+server/config.json
+server/data.json

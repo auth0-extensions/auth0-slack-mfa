@@ -1,6 +1,26 @@
-var Webtask = require('webtask-tools');
-var app = require('./index.js');
+const url = require('url');
+const tools = require('auth0-extension-express-tools');
 
-// This is the entry-point for the Webpack build. We need to convert our module
-// (which is a simple Express server) into a Webtask-compatible function.
-module.exports = Webtask.fromExpress(require(app));
+const expressApp = require('./server');
+const config = require('./server/lib/config');
+const logger = require('./server/lib/logger');
+const webtask = require('./server/lib/webtask');
+
+tools.urlHelpers.getBaseUrl = (req) => {
+  const originalUrl = url.parse(req.originalUrl || '').pathname || '';
+  return url.format({
+    protocol: 'https',
+    host: req.headers.host,
+    pathname: originalUrl.replace(req.path, '').replace(/\/$/g, '')
+  });
+};
+
+const createServer = tools.createServer((cfg, storage) => {
+  logger.info('Starting Slack MFA Extension - Version:', process.env.CLIENT_VERSION);
+  return expressApp(cfg, storage);
+});
+
+module.exports = (context, req, res) => {
+  config.setValue('PUBLIC_WT_URL', webtask.getUrl(req));
+  createServer(context, req, res);
+};
