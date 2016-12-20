@@ -20,6 +20,8 @@ export default () => {
   }));
 
   hooks.post('/on-install', (req, res) => {
+    logger.debug("Starting installation.");
+    logger.debug("Installing rule");
     const ruleName = 'auth0-slack-mfa';
     req.auth0
       .rules
