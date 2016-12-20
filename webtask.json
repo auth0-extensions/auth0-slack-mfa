@@ -33,7 +33,7 @@
       "required": true
     },
     "SIGNING_SECRET": {
-      "example": "",
+      "example": "mZj2fpwpwbbiepepBofeappfoe9929294949",
       "description": "The secret used to sign the JWT's used by this extension.",
       "required": true,
       "type": "password"
