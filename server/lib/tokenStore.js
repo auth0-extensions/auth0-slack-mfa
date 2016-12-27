@@ -10,48 +10,42 @@ const tokenStore = {
 };
 
 function connectToDb(connectionString) {
-  return new Promise(function(resolve, reject) {
-    return MongoClient.connect(connectionString, function (err, db) {
-      if (err) { return reject(err); }
-      return resolve(db);
-    });
-  });
+  return new Promise((resolve, reject) => MongoClient.connect(connectionString, (err, db) => {
+    if (err) { return reject(err); }
+    return resolve(db);
+  }));
 }
 
 function findToken(db, decodedToken) {
-  return new Promise(function(resolve, reject) {
-    return db.collection('Token').findOne({ 'jti': decodedToken.jti }, function (err, record) {
-      if (err) { return reject(err); }
-      return resolve (record);
-    });
-  });
+  return new Promise((resolve, reject) => db.collection('Token').findOne({ jti: decodedToken.jti }, (err, record) => {
+    if (err) { return reject(err); }
+    return resolve(record);
+  }));
 }
 
 function removeToken(db, decodedToken) {
-  return new Promise(function (resolve, revoke) {
-    return db.collection('Token').remove({ 'jti': decodedToken.jti }, function (err, x) {
-      if (err) { return reject(err); }
-      return resolve(true);
-    });
-  });
+  return new Promise((resolve, reject) => db.collection('Token').remove({ jti: decodedToken.jti }, (err) => {
+    if (err) { return reject(err); }
+    return resolve(true);
+  }));
 }
 
 function saveToken(db, decodedToken) {
-  return new Promise(function (resolve, reject) {
+  return new Promise((resolve, reject) => {
     if (!decodedToken.jti) { return reject('The jwt must have a jti.'); }
     if (!decodedToken.iat || isNaN(decodedToken.iat)) { return reject('The jwt must have a valid iat.'); }
 
     const issuedAt = new Date(decodedToken.iat * 1000);
-    let tokenRecord = {
+    const tokenRecord = {
       jti: decodedToken.jti,
       sub: decodedToken.sub,
       iss: decodedToken.iss,
       issued: issuedAt
     };
 
-    let collection = db.collection('Token');
-    let upsertFilter = { 'sub': decodedToken.sub, 'iss': decodedToken.iss };
-    return collection.update(upsertFilter, tokenRecord, { upsert: true }, function (err, record) {
+    const collection = db.collection('Token');
+    const upsertFilter = { sub: decodedToken.sub, iss: decodedToken.iss };
+    return collection.update(upsertFilter, tokenRecord, { upsert: true }, (err, record) => {
       if (err) { return reject(err); }
       return resolve(record);
     });
