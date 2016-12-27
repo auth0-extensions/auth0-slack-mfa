@@ -1,16 +1,17 @@
-var express = require('express');
-var uuid = require('uuid');
-var token = require('../lib/token');
-var view = require('../views/enroll');
+import express from 'express';
+import uuid from 'uuid';
 import config from '../lib/config';
-var router = express();
+import token from '../lib/token';
+import view from'../views/enroll';
+
+const router = express();
 
 function getEnroll(req, res) {
-  var client_secret = config('SIGNING_SECRET');
-  var connectionString = config('MONGO_CONNECTION_STRING');
-  var secret = new Buffer(client_secret, 'base64');
+  const clientSecret = config('SIGNING_SECRET');
+  const connectionString = config('MONGO_CONNECTION_STRING');
+  const secret = new Buffer(clientSecret, 'base64');
 
-  var decodedToken;
+  let decodedToken;
 
   token.verify(req.query.token, secret, connectionString).then(function (decoded) {
     decodedToken = decoded;
@@ -30,11 +31,11 @@ function getEnroll(req, res) {
 }
 
 function postEnroll(req, res) {
-  var client_secret = config('SIGNING_SECRET');
-  var connectionString = config('MONGO_CONNECTION_STRING');
-  var secret = new Buffer(client_secret, 'base64');
+  const clientSecret = config('SIGNING_SECRET');
+  const connectionString = config('MONGO_CONNECTION_STRING');
+  const secret = new Buffer(clientSecret, 'base64');
 
-  var decodedToken;
+  let decodedToken;
 
   token.verify(req.body.token, secret, connectionString).then(function (decoded) {
     if (decoded.slack_enrolled) { throw new Error('The user has already enrolled.') }
@@ -42,8 +43,8 @@ function postEnroll(req, res) {
     decodedToken = decoded;
     return token.revoke(decodedToken, connectionString);
   }).then(function () {
-    var userId = decodedToken.sub
-    var payload = { user_metadata: { slack_mfa_username: options.slack_username, slack_mfa_enrolled: false } };
+    const userId = decodedToken.sub
+    const payload = { user_metadata: { slack_mfa_username: options.slack_username, slack_mfa_enrolled: false } };
     return req.auth0.users.update({ id: userId }, payload);
   }).then(function () {
     return createToken(secret, decodedToken.sub, decodedToken.aud, req.body.slack_username, connectionString);
@@ -57,8 +58,8 @@ function postEnroll(req, res) {
 }
 
 function createToken(secret, sub, aud, slack_username, connectionString) {
-  var options = { expiresIn: '5m' };
-  var payload = {
+  let options = { expiresIn: '5m' };
+  let payload = {
     sub: sub,
     aud: aud,
     jti: uuid.v4(),

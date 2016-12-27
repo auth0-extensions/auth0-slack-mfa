@@ -1,6 +1,8 @@
-var MongoClient = require('mongodb').MongoClient;
+import mongodb from 'mongodb';
 
-var tokenStore = {
+const MongoClient = mongodb.MongoClient;
+
+const tokenStore = {
   connect: connectToDb,
   find: findToken,
   remove: removeToken,
@@ -39,16 +41,16 @@ function saveToken(db, decodedToken) {
     if (!decodedToken.jti) { return reject('The jwt must have a jti.'); }
     if (!decodedToken.iat || isNaN(decodedToken.iat)) { return reject('The jwt must have a valid iat.'); }
 
-    var issuedAt = new Date(decodedToken.iat * 1000);
-    var tokenRecord = {
+    const issuedAt = new Date(decodedToken.iat * 1000);
+    let tokenRecord = {
       jti: decodedToken.jti,
       sub: decodedToken.sub,
       iss: decodedToken.iss,
       issued: issuedAt
     };
 
-    var collection = db.collection('Token');
-    var upsertFilter = { 'sub': decodedToken.sub, 'iss': decodedToken.iss };
+    let collection = db.collection('Token');
+    let upsertFilter = { 'sub': decodedToken.sub, 'iss': decodedToken.iss };
     return collection.update(upsertFilter, tokenRecord, { upsert: true }, function (err, record) {
       if (err) { return reject(err); }
       return resolve(record);

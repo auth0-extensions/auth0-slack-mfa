@@ -1,10 +1,12 @@
-var jwt = require('jsonwebtoken');
-var tokens = require('./tokenStore');
-var MongoClient = require('mongodb').MongoClient;
+import jwt from 'jsonwebtoken';
+import mongodb from 'mongodb';
+import tokens from './tokenStore';
 
-var token = {
+const MongoClient = mongodb.MongoClient;
+
+const token = {
   issue: function (payload, secret, options, connectionString) {
-    var database;
+    let database;
     return tokens.connect(connectionString).then(function(db) {
       database = db;
       return tokens.find(database, payload);
@@ -22,7 +24,7 @@ var token = {
     });
   },
   verify: function (token, secret, connectionString) {
-    var decodedToken;
+    let decodedToken;
     return verify(token, secret).then(function(decoded) {
       decodedToken = decoded;
       return tokens.connect(connectionString);
@@ -48,7 +50,7 @@ function verify(token, secret) {
 
 function sign(payload, secret, options) {
   return new Promise(function (resolve, reject) {
-    var token = jwt.sign(payload, secret, options);
+    let token = jwt.sign(payload, secret, options);
     return resolve(token);
   });
 }

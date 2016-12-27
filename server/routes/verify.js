@@ -1,44 +1,46 @@
-var express = require('express');
-var uuid = require('uuid');
-var token = require('../lib/token');
+import express from 'express';
+import uuid from 'uuid';
 import { middlewares } from 'auth0-extension-express-tools';
-var router = express();
 import config from '../lib/config';
+import token from '../lib/token';
+
+const router = express();
 
 function getVerify(req, res) {
-  var client_secret = config('SIGNING_SECRET');
-  var connectionString = config('MONGO_CONNECTION_STRING');
-  var secret = new Buffer(client_secret, 'base64');
-  
-  var decodedToken;
+  const clientSecret = config('SIGNING_SECRET');
+  const connectionString = config('MONGO_CONNECTION_STRING');
+  const secret = new Buffer(clientSecret, 'base64');
+  let decodedToken;
 
-  token.verify(req.query.token, secret, connectionString).then(function (decoded) {
+  token.verify(req.query.token, secret, connectionString).then((decoded) => {
     if (decoded.iss !== 'urn:sgmeyer:slack:mfaverify') {
       throw new Error('Invalid issuer.');
     }
 
     decodedToken = decoded;
     return token.revoke(decodedToken, connectionString);
-  }).then(function () {
-    var userId = decodedToken.sub
+  })
+  .then(() => {
+    const userId = decodedToken.sub;
     return req.auth0.users.update({ id: userId }, { user_metadata: { slack_mfa_enrolled: true } });
-  }).then(function () {
-    return createCallbackToken(secret, decodedToken.sub, decodedToken.aud, connectionString);
-  }).then(function (signedToken) {
-    var callbackDomain = config('AUTH0_DOMAIN')
-    res.writeHead(302, { Location: 'https://' + callbackDomain + '/continue?token=' + signedToken + '&state=' + req.query.state });
+  })
+  .then(() => (createCallbackToken(secret, decodedToken.sub, decodedToken.aud, connectionString)))
+  .then((signedToken) => {
+    const callbackDomain = config('AUTH0_DOMAIN');
+    res.writeHead(302, { Location: `https://${callbackDomain}/continue?token=${signedToken}&state=${req.query.state}` });
     res.end();
-  }).catch(function (err) {
-    console.log(err);
+  })
+  .catch((err) => {
+    // TODO: Log err
     return res.status(500).send('Error.').end();
   });
 }
 
 function createCallbackToken(secret, sub, aud, connectionString) {
-  var options = { expiresIn: '1m' };
-  var payload = {
-    sub: sub,
-    aud: aud,
+  const options = { expiresIn: '1m' };
+  const payload = {
+    sub,
+    aud,
     jti: uuid.v4(),
     iat: new Date().getTime() / 1000,
     iss: 'urn:sgmeyer:slack:mfacallback'

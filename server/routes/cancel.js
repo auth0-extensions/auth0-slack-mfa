@@ -1,12 +1,14 @@
-var express = require('express');
-var token = require('../lib/token');
-var view = require('../views/cancel');
-var router = express();
+import express from 'express';
+import config from '../lib/config';
+import token from '../lib/token';
+import view from '../views/cancel';
+
+const router = express();
 
 function getCancel(req, res) {
-  var client_secret = config('SIGNING_SECRET');
-  var connectionString = config('MONGO_CONNECTION_STRING');
-  var secret = new Buffer(client_secret, 'base64');
+  const clientSecret = config('SIGNING_SECRET');
+  const connectionString = config('MONGO_CONNECTION_STRING');
+  const secret = new Buffer(clientSecret, 'base64');
 
   token.verify(req.query.token, secret, connectionString).then(function (decoded) {
     return token.revoke(decoded, connectionString);

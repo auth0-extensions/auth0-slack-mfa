@@ -1,18 +1,20 @@
-var express = require('express');
-var token = require('../lib/token')
-var uuid = require('uuid');
-var slack = require('../lib/slack');
-var view = require('../views/mfa');
-var router = express();
+import express from 'express';
+import uuid from 'uuid';
+import config from '../lib/config';
+import slack from '../lib/slack';
+import token from '../lib/token';
+import view from '../views/mfa';
+
+const router = express();
 
 function getMfa(req, res) {
-  var slack_api_token = config('SLACK_API_TOKEN');
-  var client_secret = config('SIGNING_SECRET');
-  var connectionString = config('MONGO_CONNECTION_STRING');
-  var secret = new Buffer(client_secret, 'base64');
+  const slackApiToken = config('SLACK_API_TOKEN');
+  const clientSecret = config('SIGNING_SECRET');
+  const connectionString = config('MONGO_CONNECTION_STRING');
+  const secret = new Buffer(clientSecret, 'base64');
 
-  var decodedToken;
-  var signedToken;
+  let decodedToken;
+  let signedToken;
 
   token.verify(req.query.token, secret, connectionString).then(function (decoded) {
     if (!decoded.slack_username) { throw new Error('JWT does not contain a slack_mfa_username'); }
@@ -23,12 +25,12 @@ function getMfa(req, res) {
      return createMfaToken(secret, decodedToken.sub, decodedToken.aud, connectionString);
   }).then(function (mfaToken) {
     signedToken = mfaToken;
-    var baseUrl = process.env.URL || 'https://' + req.x_wt.container + '.us.webtask.io/' + req.x_wt.jtn;
-    var slackOptions = {
+    let baseUrl = process.env.URL || 'https://' + req.x_wt.container + '.us.webtask.io/' + req.x_wt.jtn;
+    let slackOptions = {
       verifyUrl: baseUrl + '/verify?token=' + signedToken +'&state=' + req.query.state,
       cancelUrl: baseUrl + '/cancel?token=' + signedToken,
       username: decodedToken.slack_username.toLowerCase().trim(),
-      token: slack_api_token
+      token: slackApiToken
     };
 
     return slack.sendDM(slackOptions);
@@ -45,8 +47,8 @@ function getMfa(req, res) {
 }
 
 function createMfaToken(secret, sub, aud, connectionString) {
-  var options = { expiresIn: '5m'};
-  var payload = {
+  let options = { expiresIn: '5m' };
+  let payload = {
     sub: sub,
     aud: aud,
     jti: uuid.v4(),
