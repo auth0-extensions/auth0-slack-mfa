@@ -6,11 +6,11 @@ import logger from './lib/logger';
 import config from './lib/config';
 import meta from './routes/meta';
 import hooks from './routes/hooks';
-import cancel from './routes/cancel';
-import enroll from './routes/enroll';
+//import cancel from './routes/cancel';
+//import enroll from './routes/enroll';
 import html from './routes/html';
-import mfa from './routes/mfa';
-import verify from './routes/verify';
+//import mfa from './routes/mfa';
+//import verify from './routes/verify';
 
 module.exports = (configProvider) => {
   config.setProvider(configProvider);
