@@ -1,7 +1,6 @@
 import _ from 'lodash';
 import { Router as router } from 'express';
 import { middlewares } from 'auth0-extension-express-tools';
-
 import config from '../lib/config';
 import logger from '../lib/logger';
 import compileRule from '../lib/compileRule';
@@ -58,13 +57,15 @@ export default () => {
       .then(rules => {
         const rule = _.find(rules, { name: ruleName });
         if (rule) {
-          req.auth0.rules.delete({ id: rule.id});
+          req.auth0.rules.delete({ id: rule.id });
         }
-      }).then(() => {
+      })
+      .then(() => {
         logger.debug('Slack MFA rule deleted.');
         res.sendStatus(204);
-      }).catch((err) => {
-        logger.debug('Error deleting Slack MFA rule.')
+      })
+      .catch((err) => {
+        logger.debug('Error deleting Slack MFA rule.');
         logger.error(err);
 
         // Even if deleting fails, we need to be able to uninstall the extension.

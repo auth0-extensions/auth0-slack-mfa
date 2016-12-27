@@ -1,8 +1,10 @@
+import ejs from 'ejs';
 import express from 'express';
 import uuid from 'uuid';
 import config from '../lib/config';
+import logger from '../lib/logger';
 import token from '../lib/token';
-import view from'../views/enroll';
+import view from '../views/enroll';
 
 const router = express();
 
@@ -13,19 +15,22 @@ function getEnroll(req, res) {
 
   let decodedToken;
 
-  token.verify(req.query.token, secret, connectionString).then(function (decoded) {
+  token.verify(req.query.token, secret, connectionString)
+  .then((decoded) => {
     decodedToken = decoded;
     return token.revoke(decodedToken, connectionString);
-  }).then(function () {
-    return createToken(secret, decodedToken.sub, decodedToken.aud, decodedToken.slack_username, connectionString);
-  }).then(function (signedToken) {
-    res.end(require('ejs').render(view(), {
+  })
+  .then(() => createToken(secret, decodedToken.sub, decodedToken.aud, decodedToken.slack_username, connectionString))
+  .then((signedToken) => {
+    res.end(ejs.render(view(), {
       state: req.query.state,
       token: signedToken,
       slack_username: decodedToken.slack_username
     }));
-  }).catch(function (err) {
-    console.log(err);
+  })
+  .catch((err) => {
+    logger.debug('Error requesting enrollment information.');
+    logger.error(err);
     res.status(500).send('Error.').end();
   });
 }
@@ -37,35 +42,39 @@ function postEnroll(req, res) {
 
   let decodedToken;
 
-  token.verify(req.body.token, secret, connectionString).then(function (decoded) {
-    if (decoded.slack_enrolled) { throw new Error('The user has already enrolled.') }
+  token.verify(req.body.token, secret, connectionString)
+  .then((decoded) => {
+    if (decoded.slack_enrolled) { throw new Error('The user has already enrolled.'); }
 
     decodedToken = decoded;
     return token.revoke(decodedToken, connectionString);
-  }).then(function () {
-    const userId = decodedToken.sub
-    const payload = { user_metadata: { slack_mfa_username: options.slack_username, slack_mfa_enrolled: false } };
+  })
+  .then(() => {
+    const userId = decodedToken.sub;
+    const payload = { user_metadata: { slack_mfa_username: decodedToken.slack_username, slack_mfa_enrolled: false } };
     return req.auth0.users.update({ id: userId }, payload);
-  }).then(function () {
-    return createToken(secret, decodedToken.sub, decodedToken.aud, req.body.slack_username, connectionString);
-  }).then(function (signedToken) {
-    res.writeHead(302, {Location: 'mfa?token=' + signedToken + '&state=' + req.body.state});
+  })
+  .then(() => createToken(secret, decodedToken.sub, decodedToken.aud, req.body.slack_username, connectionString))
+  .then((signedToken) => {
+    res.writeHead(302, { Location: `mfa?token=${signedToken}&state=${req.body.state}` });
     res.end();
-  }).catch(function (err) {
-    console.log(err + '\r\n' + err.stack);
+  })
+  .catch((err) => {
+    logger.debug('Error enrolling user with Slack MFA.');
+    logger.error(err);
     res.status(500).send('Error.').end();
   });
 }
 
-function createToken(secret, sub, aud, slack_username, connectionString) {
-  let options = { expiresIn: '5m' };
-  let payload = {
-    sub: sub,
-    aud: aud,
+function createToken(secret, sub, aud, slackUsername, connectionString) {
+  const options = { expiresIn: '5m' };
+  const payload = {
+    sub,
+    aud,
     jti: uuid.v4(),
     iat: new Date().getTime() / 1000,
     issuer: 'urn:sgmeyer:slack:mfa',
-    slack_username: slack_username,
+    slack_username: slackUsername,
     slack_enrolled: false
   };
 

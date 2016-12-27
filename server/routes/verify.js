@@ -2,6 +2,7 @@ import express from 'express';
 import uuid from 'uuid';
 import { middlewares } from 'auth0-extension-express-tools';
 import config from '../lib/config';
+import logger from '../lib/logger';
 import token from '../lib/token';
 
 const router = express();
@@ -31,7 +32,8 @@ function getVerify(req, res) {
     res.end();
   })
   .catch((err) => {
-    // TODO: Log err
+    logger.debug('Error verifying Slack MFA challenge.');
+    logger.error(err);
     return res.status(500).send('Error.').end();
   });
 }

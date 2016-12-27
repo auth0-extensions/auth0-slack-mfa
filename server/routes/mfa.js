@@ -1,6 +1,8 @@
+import ejs from 'ejs';
 import express from 'express';
 import uuid from 'uuid';
 import config from '../lib/config';
+import logger from '../lib/logger';
 import slack from '../lib/slack';
 import token from '../lib/token';
 import view from '../views/mfa';
@@ -16,41 +18,45 @@ function getMfa(req, res) {
   let decodedToken;
   let signedToken;
 
-  token.verify(req.query.token, secret, connectionString).then(function (decoded) {
+  token.verify(req.query.token, secret, connectionString)
+  .then((decoded) => {
     if (!decoded.slack_username) { throw new Error('JWT does not contain a slack_mfa_username'); }
 
     decodedToken = decoded;
     return token.revoke(decoded, connectionString);
-  }).then(function () {
-     return createMfaToken(secret, decodedToken.sub, decodedToken.aud, connectionString);
-  }).then(function (mfaToken) {
+  })
+  .then(() => createMfaToken(secret, decodedToken.sub, decodedToken.aud, connectionString))
+  .then((mfaToken) => {
     signedToken = mfaToken;
-    let baseUrl = process.env.URL || 'https://' + req.x_wt.container + '.us.webtask.io/' + req.x_wt.jtn;
-    let slackOptions = {
-      verifyUrl: baseUrl + '/verify?token=' + signedToken +'&state=' + req.query.state,
-      cancelUrl: baseUrl + '/cancel?token=' + signedToken,
+    const baseUrl = process.env.URL || `https://${req.x_wt.container}.us.webtask.io/${req.x_wt.jtn}`;
+    const slackOptions = {
+      verifyUrl: `${baseUrl}/verify?token=${signedToken}&state=${req.query.state}`,
+      cancelUrl: `${baseUrl}/cancel?token=${signedToken}`,
       username: decodedToken.slack_username.toLowerCase().trim(),
       token: slackApiToken
     };
 
     return slack.sendDM(slackOptions);
-  }).then(function() {
-    res.end(require('ejs').render(view(), {
+  })
+  .then(() => {
+    res.end(ejs.render(view(), {
       token: signedToken,
       slack_username: decodedToken.slack_username,
       slack_enrolled: decodedToken.slack_enrolled
     }));
-  }).catch(function (err) {
-    console.log(err + '\r\n' + err.stack);
+  })
+  .catch((err) => {
+    logger.debug('Error sending Slack MFA challenge.');
+    logger.error(err);
     res.status(500).send('Error.').end();
   });
 }
 
 function createMfaToken(secret, sub, aud, connectionString) {
-  let options = { expiresIn: '5m' };
-  let payload = {
-    sub: sub,
-    aud: aud,
+  const options = { expiresIn: '5m' };
+  const payload = {
+    sub,
+    aud,
     jti: uuid.v4(),
     iat: new Date().getTime() / 1000,
     iss: 'urn:sgmeyer:slack:mfaverify'
