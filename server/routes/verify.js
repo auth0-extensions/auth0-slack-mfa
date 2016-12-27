@@ -5,9 +5,10 @@ import config from '../lib/config';
 import logger from '../lib/logger';
 import token from '../lib/token';
 
-const router = express();
+export default () => {
+  const router = express();
 
-function getVerify(req, res) {
+  function getVerify(req, res) {
   const clientSecret = config('SIGNING_SECRET');
   const connectionString = config('MONGO_CONNECTION_STRING');
   const secret = new Buffer(clientSecret, 'base64');
@@ -59,4 +60,4 @@ router.use(middlewares.managementApiClient({
 
 router.get('/verify', getVerify);
 
-module.exports = router;
+};
