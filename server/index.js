@@ -39,7 +39,7 @@ module.exports = (configProvider) => {
   // Configure routes.
   app.use('/meta', meta());
   app.use('/.extensions', hooks());
-  //app.use('/', [ cancel, enroll, mfa, verify ]);
+  app.use('/app', [ cancel, enroll, mfa, verify ]);
   app.use('*', html());
 
   // Generic error handler.

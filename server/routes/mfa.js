@@ -30,8 +30,8 @@ function getMfa(req, res) {
     signedToken = mfaToken;
     const baseUrl = process.env.URL || `https://${req.x_wt.container}.us.webtask.io/${req.x_wt.jtn}`;
     const slackOptions = {
-      verifyUrl: `${baseUrl}/verify?token=${signedToken}&state=${req.query.state}`,
-      cancelUrl: `${baseUrl}/cancel?token=${signedToken}`,
+      verifyUrl: `${baseUrl}/app/verify?token=${signedToken}&state=${req.query.state}`,
+      cancelUrl: `${baseUrl}/app/cancel?token=${signedToken}`,
       username: decodedToken.slack_username.toLowerCase().trim(),
       token: slackApiToken
     };
