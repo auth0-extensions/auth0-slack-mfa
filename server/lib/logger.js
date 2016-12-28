@@ -1,5 +1,4 @@
-//import winston from 'winston';
-var winston = require('winston');
+const winston = require('winston');
 
 winston.emitErrs = true;
 
