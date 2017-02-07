@@ -34,6 +34,8 @@ module.exports = externalModules.then((externals) => {
   externals.compatible['body-parser'] = true;
   externals.compatible['mime-types'] = true;
   externals.compatible['webtask-tools'] = true;
+  externals.compatible.mongodb = 'mongodb@2.2.11';
+  externals.compatible.uuid = 'uuid@2.0.1';
 
   // Transform to commonjs.
   Object.keys(externals.compatible).forEach(k => {
