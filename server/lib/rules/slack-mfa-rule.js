@@ -4,6 +4,10 @@ module.exports = `/*
 function (user, context, callback) {
   var jwt = require('jsonwebtoken');
   var MongoClient = require('mongodb');
+  var mongoConnectionString = '<%= mongoConnectionString %>';
+  var clientSecret = '<%= clientSecret %>,';
+  var mfaUrl = '<%= extentionUrl %>';
+
 
   // If you do not wish to use Slack MFA for all the clients in this account, uncomment
   // the code below and specify the client_ids to protect.
@@ -15,11 +19,11 @@ function (user, context, callback) {
 
   // returning from MFA validation
   if(context.protocol === 'redirect-callback') {
-    var decoded = jwt.verify(context.request.query.token, new Buffer(configuration.slack_mfa_secret, 'base64'));
+    var decoded = jwt.verify(context.request.query.token, new Buffer(clientSecret 'base64'));
     if (!decoded || decoded.iss !== 'urn:sgmeyer:slack:mfacallback') return callback(new Error('Invalid Token'));
 
     MongoClient = require('mongodb').MongoClient;
-    MongoClient.connect(configuration.mongo_connection, function(err, db) {
+    MongoClient.connect(mongoConnectionString, function(err, db) {
       var collection = db.collection('Token');
 
       var filter = { "jti": decoded.jti };
@@ -51,7 +55,7 @@ function (user, context, callback) {
     }
 
     var token = jwt.sign(token_payload,
-      new Buffer(configuration.slack_mfa_secret, 'base64'),
+      new Buffer(clientSecret, 'base64'),
       {
         subject: user.user_id,
         expiresInMinutes: 5,
@@ -61,7 +65,7 @@ function (user, context, callback) {
       });
 
     MongoClient = require('mongodb').MongoClient;
-    MongoClient.connect(configuration.mongo_connection, function (err, db) {
+    MongoClient.connect(mongoConnectionString, function (err, db) {
       var tokenRecord = {
         jti: token_payload.jti,
         sub: token_payload.sub,
@@ -74,7 +78,7 @@ function (user, context, callback) {
         if (err) { throw new Error('Failed to whitelist JWT.'); }
 
       var route = user.user_metadata && user.user_metadata.slack_mfa_username ? "/mfa" : "/mfa/enroll";
-        context.redirect = { url: configuration.slack_mfa_url + route + '?token=' + token };
+        context.redirect = { url: mfaUrl + route + '?token=' + token };
         return callback(null, user, context);
       });
     });

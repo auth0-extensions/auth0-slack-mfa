@@ -52,6 +52,7 @@ function postEnroll(req, res) {
   .then(() => {
     const userId = decodedToken.sub;
     const payload = { user_metadata: { slack_mfa_username: decodedToken.slack_username, slack_mfa_enrolled: false } };
+    
     return req.auth0.users.update({ id: userId }, payload);
   })
   .then(() => createToken(secret, decodedToken.sub, decodedToken.aud, req.body.slack_username, connectionString))
