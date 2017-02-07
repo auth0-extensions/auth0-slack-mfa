@@ -4,8 +4,8 @@ import rule from './rules/slack-mfa-rule';
 
 export default () =>
   ejs.render(rule, {
-    clientSecret: config('EXTENSION_SECRET'),
     extensionUrl: config('PUBLIC_WT_URL').replace(/\/$/g, ''),
     mongoConnectionString: config('MONGO_CONNECTION_STRING'),
+    signingSecret: config('EXTENSION_SECRET'),
     updateTime: () => new Date().toISOString()
   });

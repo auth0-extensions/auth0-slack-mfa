@@ -4,10 +4,10 @@ module.exports = `/*
 function (user, context, callback) {
   var jwt = require('jsonwebtoken');
   var MongoClient = require('mongodb');
+  
   var mongoConnectionString = '<%= mongoConnectionString %>';
-  var clientSecret = '<%= clientSecret %>,';
+  var signingSecret = '<%= signingSecret %>';
   var mfaUrl = '<%= extensionUrl %>';
-
 
   // If you do not wish to use Slack MFA for all the clients in this account, uncomment
   // the code below and specify the client_ids to protect.
@@ -19,7 +19,7 @@ function (user, context, callback) {
 
   // returning from MFA validation
   if(context.protocol === 'redirect-callback') {
-    var decoded = jwt.verify(context.request.query.token, new Buffer(clientSecret 'base64'));
+    var decoded = jwt.verify(context.request.query.token, new Buffer(signingSecret, 'base64'));
     if (!decoded || decoded.iss !== 'urn:sgmeyer:slack:mfacallback') return callback(new Error('Invalid Token'));
 
     MongoClient = require('mongodb').MongoClient;
@@ -54,9 +54,7 @@ function (user, context, callback) {
       token_payload.slack_enrolled = user.user_metadata.slack_mfa_enrolled;
     }
 
-    var token = jwt.sign(token_payload,
-      new Buffer(clientSecret, 'base64'),
-      {
+    var token = jwt.sign(token_payload, new Buffer(signingSecret, 'base64'), {
         subject: user.user_id,
         expiresInMinutes: 5,
         audience: context.clientID,
