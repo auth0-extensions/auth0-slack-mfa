@@ -56,7 +56,7 @@ function postEnroll(req, res) {
   })
   .then(() => createToken(secret, decodedToken.sub, decodedToken.aud, req.body.slack_username, connectionString))
   .then((signedToken) => {
-    res.writeHead(302, { Location: `app/mfa?token=${signedToken}&state=${req.body.state}` });
+    res.writeHead(302, { Location: `mfa?token=${signedToken}&state=${req.body.state}` });
     res.end();
   })
   .catch((err) => {

@@ -38,7 +38,7 @@ module.exports = (configProvider) => {
   }));
 
   // Configure routes.
-  app.use('/xyz', [ cancel, enroll, mfa, verify ]);
+  app.use('/mfa', [ cancel, enroll, mfa, verify ]);
   app.use('/meta', meta());
   app.use('/.extensions', hooks());
   app.use('/app', Express.static(path.join(__dirname, '../dist')));
