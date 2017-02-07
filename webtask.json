@@ -22,26 +22,15 @@
     "scopes": "read:clients delete:clients read:rules create:rules update:rules delete:rules"
   },
   "secrets": {
-    "CLIENT_ID": {
-      "example": "Client ID",
-      "description": "The client id used for Slack MFA",
-      "required": true
-    },
     "SLACK_API_TOKEN": {
       "example": "Slack API Token",
       "description": "Your Slack API token.",
       "required": true
     },
     "MONGO_CONNECTION_STRING": {
-      "example": "Slack API Token",
+      "example": "mongodb://un:pwd@url/collection",
       "description": "Your MongoDB connection string.",
       "required": true
-    },
-    "CLIENT_SECRET": {
-      "example": "mZj2fpwpwbbiepepBofeappfoe9929294949",
-      "description": "The secret used to sign the JWT's used by this extension.",
-      "required": true,
-      "type": "password"
     }
   }
 }
