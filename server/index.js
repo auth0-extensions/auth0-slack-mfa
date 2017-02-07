@@ -1,3 +1,4 @@
+import path from 'path';
 import morgan from 'morgan';
 import Express from 'express';
 import bodyParser from 'body-parser';
@@ -37,9 +38,10 @@ module.exports = (configProvider) => {
   }));
 
   // Configure routes.
+  app.use('/xyz', [ cancel, enroll, mfa, verify ]);
   app.use('/meta', meta());
   app.use('/.extensions', hooks());
-  app.use('/app', [ cancel, enroll, mfa, verify ]);
+  app.use('/app', Express.static(path.join(__dirname, '../dist')));
   app.use('*', html());
 
   // Generic error handler.

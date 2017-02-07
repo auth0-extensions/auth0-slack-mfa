@@ -16,7 +16,7 @@ function isExpired(decodedToken) {
 
 export function logout() {
   return (dispatch) => {
-    sessionStorage.removeItem('box-platform:apiToken');
+    sessionStorage.removeItem('slack-mfa:apiToken');
 
     window.location.href = window.config.AUTH0_MANAGE_URL;
 
@@ -28,7 +28,7 @@ export function logout() {
 
 export function loadCredentials() {
   return (dispatch) => {
-    const token = sessionStorage.getItem('box-platform:apiToken');
+    const token = sessionStorage.getItem('slack-mfa:apiToken');
     if (token) {
       const apiToken = token;
       if (apiToken) {
