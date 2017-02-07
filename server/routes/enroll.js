@@ -1,6 +1,7 @@
 import ejs from 'ejs';
 import express from 'express';
 import uuid from 'uuid';
+import { middlewares } from 'auth0-extension-express-tools';
 import config from '../lib/config';
 import logger from '../lib/logger';
 import token from '../lib/token';
