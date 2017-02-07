@@ -4,7 +4,11 @@ module.exports = `/*
 function (user, context, callback) {
   var jwt = require('jsonwebtoken');
   var MongoClient = require('mongodb');
-  
+
+  var a0domain = '<%= auth0Domain %>';
+  var a0cid = '<%= clientId %>';
+  var a0sec = '<%= clientSecret %>';
+
   var mongoConnectionString = '<%= mongoConnectionString %>';
   var signingSecret = '<%= signingSecret %>';
   var mfaUrl = '<%= extensionUrl %>';
