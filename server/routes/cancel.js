@@ -8,9 +8,9 @@ import view from '../views/cancel';
 const router = express();
 
 function getCancel(req, res) {
-  const clientSecret = config('SIGNING_SECRET');
+  const signingSecret = config('EXTENSION_SECRET');
   const connectionString = config('MONGO_CONNECTION_STRING');
-  const secret = new Buffer(clientSecret, 'base64');
+  const secret = new Buffer(signingSecret, 'base64');
 
   token.verify(req.query.token, secret, connectionString)
   .then((decoded) => token.revoke(decoded, connectionString))

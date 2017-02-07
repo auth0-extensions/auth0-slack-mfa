@@ -8,9 +8,9 @@ import token from '../lib/token';
 export default () => {
   const verify = router();
   function getVerify(req, res) {
-    const clientSecret = config('SIGNING_SECRET');
+    const signingSecret = config('EXTENSION_SECRET');
     const connectionString = config('MONGO_CONNECTION_STRING');
-    const secret = new Buffer(clientSecret, 'base64');
+    const secret = new Buffer(signingSecret, 'base64');
     let decodedToken;
 
     token.verify(req.query.token, secret, connectionString).then((decoded) => {

@@ -23,13 +23,6 @@ module.exports = (configProvider) => {
 
   app.use(bodyParser.json());
   app.use(bodyParser.urlencoded({ extended: false }));
-
-  const managementClient = middlewares.managementApiClient({
-    domain: config('AUTH0_DOMAIN'),
-    clientId: config('AUTH0_CLIENT_ID'),
-    clientSecret: config('AUTH0_CLIENT_SECRET')
-  });
-
   app.use('/mfa', managementClient, [ cancel, enroll, mfa, verify ]);
 
   app.use(routes.dashboardAdmins({

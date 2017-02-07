@@ -11,9 +11,9 @@ const router = express();
 
 function getMfa(req, res) {
   const slackApiToken = config('SLACK_API_TOKEN');
-  const clientSecret = config('SIGNING_SECRET');
+  const signingSecret = config('EXTENSION_SECRET');
   const connectionString = config('MONGO_CONNECTION_STRING');
-  const secret = new Buffer(clientSecret, 'base64');
+  const secret = new Buffer(signingSecret, 'base64');
 
   let decodedToken;
   let signedToken;

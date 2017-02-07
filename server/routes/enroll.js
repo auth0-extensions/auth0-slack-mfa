@@ -9,9 +9,9 @@ import view from '../views/enroll';
 const router = express();
 
 function getEnroll(req, res) {
-  const clientSecret = config('SIGNING_SECRET');
+  const signingSecret = config('EXTENSION_SECRET');
   const connectionString = config('MONGO_CONNECTION_STRING');
-  const secret = new Buffer(clientSecret, 'base64');
+  const secret = new Buffer(signingSecret, 'base64');
 
   let decodedToken;
 
@@ -36,9 +36,9 @@ function getEnroll(req, res) {
 }
 
 function postEnroll(req, res) {
-  const clientSecret = config('SIGNING_SECRET');
+  const signingSecret = config('EXTENSION_SECRET');
   const connectionString = config('MONGO_CONNECTION_STRING');
-  const secret = new Buffer(clientSecret, 'base64');
+  const secret = new Buffer(signingSecret, 'base64');
 
   let decodedToken;
 
@@ -81,6 +81,12 @@ function createToken(secret, sub, aud, slackUsername, connectionString) {
 
   return token.issue(payload, secret, options, connectionString);
 }
+
+router.use(middlewares.managementApiClient({
+  domain: config('AUTH0_DOMAIN'),
+  clientId: config('AUTH0_CLIENT_ID'),
+  clientSecret: config('AUTH0_CLIENT_SECRET')
+}));
 
 router.get('/enroll', getEnroll);
 router.post('/enroll', postEnroll);
