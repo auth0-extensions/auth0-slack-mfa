@@ -6,7 +6,7 @@ function (user, context, callback) {
   var MongoClient = require('mongodb');
   var mongoConnectionString = '<%= mongoConnectionString %>';
   var clientSecret = '<%= clientSecret %>,';
-  var mfaUrl = '<%= extentionUrl %>';
+  var mfaUrl = '<%= extensionUrl %>';
 
 
   // If you do not wish to use Slack MFA for all the clients in this account, uncomment
