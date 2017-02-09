@@ -7,7 +7,7 @@ const config = (key) => {
   }
 
   if (!currentProvider) {
-    throw new Error('A configuration provider has not been set');
+    throw new Error(`A configuration provider has not been set: ${key}`);
   }
 
   return currentProvider(key);
