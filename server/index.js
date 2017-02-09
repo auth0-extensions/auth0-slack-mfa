@@ -23,7 +23,7 @@ module.exports = (configProvider) => {
 
   app.use(bodyParser.json());
   app.use(bodyParser.urlencoded({ extended: false }));
-  app.use('/mfa', [ cancel, enroll, mfa, verify ]);
+  app.use('/mfa', [ cancel(), enroll(), mfa(), verify() ]);
 
   app.use(routes.dashboardAdmins({
     stateKey: 'slack-mfa-state',
