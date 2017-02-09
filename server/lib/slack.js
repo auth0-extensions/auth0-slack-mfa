@@ -6,6 +6,7 @@ const prequest = Promise.promisify(request);
 
 const slack = {
   sendDM: (options) => {
+    console.log('Sending director message:');
     const text = JSON.stringify([ {
       fallback: `Follow this link to complete login: <${options.verifyUrl} | Complete Login>.`,
       title: 'You have attempted to log into a remote site.  Please click the link below to continue.',
