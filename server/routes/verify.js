@@ -58,4 +58,6 @@ export default () => {
   }));
 
   verify.get('/verify', getVerify);
+
+  return verify;
 };
