@@ -1,5 +1,5 @@
 import ejs from 'ejs';
-import express from 'express';
+import { Router as router } from 'express';
 import uuid from 'uuid';
 import config from '../lib/config';
 import logger from '../lib/logger';
@@ -7,9 +7,8 @@ import slack from '../lib/slack';
 import token from '../lib/token';
 import view from '../views/mfa';
 
-const router = express();
-
 function getMfa(req, res) {
+  const mfa = router();
   const slackApiToken = config('SLACK_API_TOKEN');
   const signingSecret = config('EXTENSION_SECRET');
   const connectionString = config('MONGO_CONNECTION_STRING');
@@ -65,6 +64,6 @@ function createMfaToken(secret, sub, aud, connectionString) {
   return token.issue(payload, secret, options, connectionString);
 }
 
-router.get('/mfa', getMfa);
+mfa.get('/mfa', getMfa);
 
-module.exports = router;
+module.exports = mfa;

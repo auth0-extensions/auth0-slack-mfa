@@ -1,13 +1,12 @@
 import ejs from 'ejs';
-import express from 'express';
+import { Router as router } from 'express';
 import config from '../lib/config';
 import logger from '../lib/logger';
 import token from '../lib/token';
 import view from '../views/cancel';
 
-const router = express();
-
 function getCancel(req, res) {
+  const cancel = router();
   const signingSecret = config('EXTENSION_SECRET');
   const connectionString = config('MONGO_CONNECTION_STRING');
   const secret = new Buffer(signingSecret, 'base64');
@@ -25,6 +24,6 @@ function getCancel(req, res) {
   });
 }
 
-router.get('/cancel', getCancel);
+cancel.get('/cancel', getCancel);
 
-module.exports = router;
+module.exports = cancel;

@@ -1,5 +1,5 @@
 import ejs from 'ejs';
-import express from 'express';
+import { Router as router } from 'express';
 import uuid from 'uuid';
 import { middlewares } from 'auth0-extension-express-tools';
 import config from '../lib/config';
@@ -7,9 +7,8 @@ import logger from '../lib/logger';
 import token from '../lib/token';
 import view from '../views/enroll';
 
-const router = express();
-
 function getEnroll(req, res) {
+  const enroll = router();
   const signingSecret = config('EXTENSION_SECRET');
   const connectionString = config('MONGO_CONNECTION_STRING');
   const secret = new Buffer(signingSecret, 'base64');
@@ -83,13 +82,13 @@ function createToken(secret, sub, aud, slackUsername, connectionString) {
   return token.issue(payload, secret, options, connectionString);
 }
 
-router.use(middlewares.managementApiClient({
+enroll.use(middlewares.managementApiClient({
   domain: config('AUTH0_DOMAIN'),
   clientId: config('AUTH0_CLIENT_ID'),
   clientSecret: config('AUTH0_CLIENT_SECRET')
 }));
 
-router.get('/enroll', getEnroll);
-router.post('/enroll', postEnroll);
+enroll.get('/enroll', getEnroll);
+enroll.post('/enroll', postEnroll);
 
-module.exports = router;
+module.exports = enroll;
