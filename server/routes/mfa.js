@@ -26,7 +26,7 @@ export default () => {
       decodedToken = decoded;
       return token.revoke(decoded, connectionString);
     })
-    .then(() => createMfaToken(secret, decodedToken.sub, decodedToken.aud, connectionString))
+    .then(() => createMfaToken(secret, decodedToken, connectionString))
     .then((mfaToken) => {
       signedToken = mfaToken;
       const baseUrl = process.env.URL || `https://${req.x_wt.container}.us.webtask.io/${req.x_wt.jtn}`;
@@ -36,7 +36,7 @@ export default () => {
         username: decodedToken.slack_username.toLowerCase().trim(),
         token: slackApiToken
       };
-
+      console.log(JSON.stringify(slackOptions, null, 2));
       return slack.sendDM(slackOptions);
     })
     .then(() => {
@@ -53,14 +53,16 @@ export default () => {
     });
   }
 
-  function createMfaToken(secret, sub, aud, connectionString) {
+  function createMfaToken(secret, decodedToken, connectionString) {
     const options = { expiresIn: '5m' };
     const payload = {
-      sub,
-      aud,
+      sub: decodedToken.sub,
+      aud: decodedToken.aud,
       jti: uuid.v4(),
       iat: new Date().getTime() / 1000,
-      iss: 'urn:sgmeyer:slack:mfaverify'
+      iss: 'urn:sgmeyer:slack:mfaverify',
+      slack_username: decoded.slack_username,
+      slack_enrolled: decoded.slack_enrolled
     };
 
     return token.issue(payload, secret, options, connectionString);
