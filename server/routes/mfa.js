@@ -36,7 +36,6 @@ export default () => {
         username: decodedToken.slack_username.toLowerCase().trim(),
         token: slackApiToken
       };
-      console.log(JSON.stringify(slackOptions, null, 2));
       return slack.sendDM(slackOptions);
     })
     .then(() => {
