@@ -23,7 +23,7 @@ const mfa = {
       authorization: `Bearer ${options.apiToken}`,
       'content-type': 'application/json'
     },
-    body: { user_metadata: { slack_mfa_enrolled: true } },
+    body: { user_metadata: { slack_mfa_username: options.slack_username, slack_mfa_enrolled: true } },
     json: true
   })
 };

@@ -23,7 +23,7 @@ export default () => {
     })
     .then(() => {
       const userId = decodedToken.sub;
-      return req.auth0.users.update({ id: userId }, { user_metadata: { slack_mfa_enrolled: true } });
+      return req.auth0.users.update({ id: userId }, { user_metadata: { slack_mfa_username: decodedToken.slack_username, slack_mfa_enrolled: true } });
     })
     .then(() => (createCallbackToken(secret, decodedToken.sub, decodedToken.aud, connectionString)))
     .then((signedToken) => {
