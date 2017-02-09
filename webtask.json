@@ -19,7 +19,7 @@
     "createClient": true,
     "onInstallPath": "/.extensions/on-install",
     "onUninstallPath": "/.extensions/on-uninstall",
-    "scopes": "read:clients delete:clients read:rules create:rules update:rules delete:rules"
+    "scopes": "read:clients delete:clients read:rules create:rules update:rules delete:rules update:users"
   },
   "secrets": {
     "SLACK_API_TOKEN": {
