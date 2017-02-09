@@ -6,7 +6,6 @@ const prequest = Promise.promisify(request);
 
 const slack = {
   sendDM: (options) => {
-    console.log('Sending director message:');
     const text = JSON.stringify([ {
       fallback: `Follow this link to complete login: <${options.verifyUrl} | Complete Login>.`,
       title: 'You have attempted to log into a remote site.  Please click the link below to continue.',
@@ -14,7 +13,7 @@ const slack = {
       color: '#3AA3E3'
     } ]);
 
-    const requestUrl = `https://slack.com/api/chat.postMessage?token=${options.token}&channel=%40${options.username}'&attachments=${querystring.escape(text)}&pretty=1&as_user=true&unfurl_links=false&unfurl_media=false`;
+    const requestUrl = `https://slack.com/api/chat.postMessage?token=${options.token}&channel=%40${options.username}&attachments=${querystring.escape(text)}&pretty=1&as_user=true&unfurl_links=false&unfurl_media=false`;
     console.log(requestUrl);
     return prequest({
       method: 'GET',
