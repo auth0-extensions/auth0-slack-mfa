@@ -61,8 +61,8 @@ export default () => {
       jti: uuid.v4(),
       iat: new Date().getTime() / 1000,
       iss: 'urn:sgmeyer:slack:mfaverify',
-      slack_username: decoded.slack_username,
-      slack_enrolled: decoded.slack_enrolled
+      slack_username: decodedToken.slack_username,
+      slack_enrolled: decodedToken.slack_enrolled
     };
 
     return token.issue(payload, secret, options, connectionString);
