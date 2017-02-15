@@ -68,7 +68,7 @@ export default () => {
   const connectionString = config('MONGO_CONNECTION_STRING');
   let db;
   
-  connectToDb(connectionString)
+  return connectToDb(connectionString)
     .then(connection => {
       db = connection;
       return Promise.resolve(db);

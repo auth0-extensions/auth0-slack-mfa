@@ -40,14 +40,17 @@ export default () => {
         })
         .then(() => {
           logger.debug('Slack MFA rule deployed.');
+          return Primise.resolve();
         })
         .catch((err) => {
           logger.debug('Error deploying Slack MFA rule.');
           logger.error(err);
+          return Primise.resolve();
         }),
         buildCollection(config)
           .then(() => {
             logger.debug('Token whitelist collection successfully created.');
+            return Primise.resolve();
           })
           .catch((err) => {
             logger.debug('Error build token whitelist collection');
@@ -62,8 +65,6 @@ export default () => {
 
       res.sendStatus(204);
     });
-
-    buildCollection(config);
   });
 
   hooks.delete('/on-uninstall', (req, res) => {
