@@ -4,6 +4,7 @@ import { middlewares } from 'auth0-extension-express-tools';
 import config from '../lib/config';
 import logger from '../lib/logger';
 import compileRule from '../lib/compileRule';
+import buildCollection from '../lib/buildCollection';
 
 export default () => {
   const hooks = router();
@@ -20,33 +21,49 @@ export default () => {
 
   hooks.post('/on-install', (req, res) => {
     const ruleName = 'auth0-slack-mfa';
-    req.auth0
-      .rules
-      .getAll()
-      .then(rules => {
-        const payload = {
-          name: ruleName,
-          script: compileRule(config, ruleName)
-        };
+    var tasks = [
+      req.auth0
+        .rules
+        .getAll()
+        .then(rules => {
+          const payload = {
+            name: ruleName,
+            script: compileRule(config, ruleName)
+          };
 
-        const rule = _.find(rules, { name: ruleName });
-        if (rule) {
-          return req.auth0.rules.update({ id: rule.id }, payload);
-        }
+          const rule = _.find(rules, { name: ruleName });
+          if (rule) {
+            return req.auth0.rules.update({ id: rule.id }, payload);
+          }
 
-        return req.auth0.rules.create({ stage: 'login_success', ...payload });
-      })
-      .then(() => {
-        logger.debug('Slack MFA rule deployed.');
-        res.sendStatus(204);
-      })
-      .catch((err) => {
-        logger.debug('Error deploying Slack MFA rule.');
-        logger.error(err);
+          return req.auth0.rules.create({ stage: 'login_success', ...payload });
+        })
+        .then(() => {
+          logger.debug('Slack MFA rule deployed.');
+        })
+        .catch((err) => {
+          logger.debug('Error deploying Slack MFA rule.');
+          logger.error(err);
+        }),
+        buildCollection(config)
+          .then(() => {
+            logger.debug('Token whitelist collection successfully created.');
+          })
+          .catch((err) => {
+            logger.debug('Error build token whitelist collection');
+            logger.error(err);
+          })
+    ];
 
-        // Even if deleting fails, we need to be able to uninstall the extension.
+    Promise.all(tasks, function(err) {
+      if (err) {
         res.sendStatus(400);
-      });
+      }
+
+      res.sendStatus(204);
+    });
+
+    buildCollection(config);
   });
 
   hooks.delete('/on-uninstall', (req, res) => {
