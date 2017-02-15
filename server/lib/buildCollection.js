@@ -12,7 +12,7 @@ function connectToDb(connectionString) {
   return promise;
 }
 
-function creatCollection(db) {
+function createCollection(db) {
   const promise = new Promise((resolve, reject) => {
     db.createCollection('Token', (err, creatCollection) => {
       if (err) {
