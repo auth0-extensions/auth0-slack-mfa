@@ -47,23 +47,24 @@ export default () => {
           logger.error(err);
         }),
 
-    buildCollection(config)
-      .then(() => {
-        logger.debug('Token whitelist collection successfully created.');
-        return Promise.resolve();
-      })
-      .catch((err) => {
-        logger.debug('Error build token whitelist collection');
-        logger.error(err);
-      })
-  ];
+      buildCollection(config)
+        .then(() => {
+          logger.debug('Token whitelist collection successfully created.');
+          return Promise.resolve();
+        })
+        .catch((err) => {
+          logger.debug('Error build token whitelist collection');
+          logger.error(err);
+        })
+    ];
 
-    Promise.all(tasks).then((values) => {
-      if (err) {
-        res.sendStatus(400);
-      }
-
+    Promise.all(tasks)
+    .then((values) => {
       res.sendStatus(204);
+    })
+    .catch((err) => {
+      logger.error(err);
+      res.sendStatus(400);
     });
   });
 
