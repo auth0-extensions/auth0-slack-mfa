@@ -14,7 +14,7 @@ function connectToDb(connectionString) {
 
 function createCollection(db) {
   const promise = new Promise((resolve, reject) => {
-    db.createCollection('Token', (err, creatCollection) => {
+    db.createCollection('Token', (err, collection) => {
       if (err) {
         return reject(err);
       }
@@ -76,9 +76,10 @@ export default () => {
     .then(createCollection)
     .then(createTtlIndex)
     .then(createIdIndex)
-    .finally(() => {
+    .then(() => {
       if(db) {
         db.close();
       }
-    });
+    })
+    .catch((err) => { db.close(); });
 }
