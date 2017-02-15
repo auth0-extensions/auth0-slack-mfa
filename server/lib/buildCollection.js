@@ -1,4 +1,4 @@
-import { mongodb } from 'mongodb';
+import mongodb from 'mongodb';
 import config from './config';
 
 const MongoClient = mongodb.MongoClient;
