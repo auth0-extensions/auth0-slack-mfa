@@ -45,20 +45,20 @@ export default () => {
         .catch((err) => {
           logger.debug('Error deploying Slack MFA rule.');
           logger.error(err);
-          return Promise.resolve();
         }),
-        buildCollection(config)
-          .then(() => {
-            logger.debug('Token whitelist collection successfully created.');
-            return Promise.resolve();
-          })
-          .catch((err) => {
-            logger.debug('Error build token whitelist collection');
-            logger.error(err);
-          })
-    ];
 
-    Promise.all(tasks, function(err) {
+    buildCollection(config)
+      .then(() => {
+        logger.debug('Token whitelist collection successfully created.');
+        return Promise.resolve();
+      })
+      .catch((err) => {
+        logger.debug('Error build token whitelist collection');
+        logger.error(err);
+      })
+  ];
+
+    Promise.all(tasks).then((values) => {
       if (err) {
         res.sendStatus(400);
       }
