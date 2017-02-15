@@ -5,13 +5,34 @@ user clicks the magic link they will complete their login process.
 
 ## Installation
 
-## Setting up MongoDB
+## Getting a Slack API Token
+
+This key is used to send direct messages to members of your Slack Team.  To acquire and API token you must create a new [custom bot user](https://my.slack.com/services/new/bot) or using an existing one.
+It is better to setup a specific bot for this activity.  The MFA magic links will be sent to you users on behalf of the bot.
+
+## Installing the extension
+
+Go to the [Extensions](https://manage.auth0.com/#/extensions) tab of the dashboard.
+
+![](/media/step1-extensions-overview.png)
+
+Click **CREATE EXTENSION** and install the extension from this repository: https://github.com/auth0-extensions/auth0-slack-mfa
+
+![](/media/step2-extension-link.png)
+
+Finally enter your Box and Auth0 settings:
+
+ - `SLACK_API_TOKEN`: Your teams Slack API Key
+ - `MONGO_CONNECTION_STRING`: The connection string for you MongoDB instance.
+
+ ### The extension will setup a mongo collection
 
 The Slack MFA extension utilizes MongoDB to store a whitelist of valid JWT's.  Each JWT is a onetime use 
-token that is revoked after it is used.  MongoDB manages the whitelist, which is shared by the rule and the extension.
+token that is revoked after it is used.  This extension will automatically setup a mongo collection for
+managing these tokens.  It will..
 
-- Setup a collection named: `Token`
-- Create a unique index for _id:
+- Create a collection named: `Token`
+- Create a unique index for _id (this should exist by default):
 ```
 {
   "v": 1,
@@ -37,27 +58,6 @@ token that is revoked after it is used.  MongoDB manages the whitelist, which is
   "expireAfterSeconds": 300
 }
 ```
-
-## Getting a Slack API Token
-
-This key is used to send direct messages to members of your Slack Team.  To acquire and API token you must create a new [custom bot user](https://my.slack.com/services/new/bot) or using an existing one.
-It is better to setup a specific bot for this activity.  The MFA magic links will be sent to you users on behalf of the bot.
-
-## Installing the extension
-
-Go to the [Extensions](https://manage.auth0.com/#/extensions) tab of the dashboard.
-
-![](/media/step1-extensions-overview.png)
-
-Click **CREATE EXTENSION** and install the extension from this repository: https://github.com/auth0-extensions/auth0-slack-mfa
-
-![](/media/step2-extension-link.png)
-
-Finally enter your Box and Auth0 settings:
-
- - `SLACK_API_TOKEN`: Your teams Slack API Key
- - `MONGO_CONNECTION_STRING`: The connection string for you MongoDB instance.
-
  
  # TODO:
  - [ ] Script out the creation of a mongodb collection and ttl index.
