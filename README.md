@@ -60,7 +60,7 @@ managing these tokens.  It will..
 ```
  
  # TODO:
- - [ ] Script out the creation of a mongodb collection and ttl index.
+ - [X] Script out the creation of a mongodb collection and ttl index.
  - [ ] Get assets for logos.
  - [ ] Deploy assets to cdn so help screen is useful
  - [ ] Pull rule's configuration from the extension API instead of hard coding it.

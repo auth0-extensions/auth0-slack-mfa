@@ -11,7 +11,7 @@ export default () => {
   const hookValidator = middlewares
     .validateHookToken(config('AUTH0_DOMAIN'), config('WT_URL'), config('EXTENSION_SECRET'));
 
-  //hooks.use('/on-install', hookValidator('/.extensions/on-install'));
+  hooks.use('/on-install', hookValidator('/.extensions/on-install'));
   hooks.use('/on-uninstall', hookValidator('/.extensions/on-uninstall'));
   hooks.use(middlewares.managementApiClient({
     domain: config('AUTH0_DOMAIN'),
