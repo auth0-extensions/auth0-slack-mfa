@@ -11,7 +11,7 @@ export default () => {
   const hookValidator = middlewares
     .validateHookToken(config('AUTH0_DOMAIN'), config('WT_URL'), config('EXTENSION_SECRET'));
 
-  hooks.use('/on-install', hookValidator('/.extensions/on-install'));
+  //hooks.use('/on-install', hookValidator('/.extensions/on-install'));
   hooks.use('/on-uninstall', hookValidator('/.extensions/on-uninstall'));
   hooks.use(middlewares.managementApiClient({
     domain: config('AUTH0_DOMAIN'),
@@ -21,7 +21,7 @@ export default () => {
 
   hooks.post('/on-install', (req, res) => {
     const ruleName = 'auth0-slack-mfa';
-    var tasks = [
+    const tasks = [
       req.auth0
         .rules
         .getAll()
@@ -41,20 +41,12 @@ export default () => {
         .then(() => {
           logger.debug('Slack MFA rule deployed.');
           return Promise.resolve();
-        })
-        .catch((err) => {
-          logger.debug('Error deploying Slack MFA rule.');
-          logger.error(err);
         }),
 
       buildCollection(config)
         .then(() => {
           logger.debug('Token whitelist collection successfully created.');
           return Promise.resolve();
-        })
-        .catch((err) => {
-          logger.debug('Error build token whitelist collection');
-          logger.error(err);
         })
     ];
 
