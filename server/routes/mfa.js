@@ -67,7 +67,7 @@ export default () => {
     return token.issue(payload, secret, options, connectionString);
   }
 
-  mfa.get('/mfa', getMfa);
+  mfa.get('/', getMfa);
 
   return mfa;
 }
