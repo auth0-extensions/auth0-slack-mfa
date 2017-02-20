@@ -1,10 +1,7 @@
-import _ from 'lodash';
 import { Router as router } from 'express';
 import { middlewares } from 'auth0-extension-express-tools';
 import config from '../lib/config';
-import logger from '../lib/logger';
-import compileRule from '../lib/compileRule';
-import buildCollection from '../lib/buildCollection';
+import { provisionRule as rules, provisionMongo as mongodb } from '../lib/provision';
 
 export default () => {
   const hooks = router();
@@ -19,66 +16,40 @@ export default () => {
     clientSecret: config('AUTH0_CLIENT_SECRET')
   }));
 
+  /**
+   * Hook is run once the extension is installed.  This provisions the slack-mfa-rule
+   * and a mongo collection ('Token') used to keep a JWT whitelist for one-time use tokens.
+   */
   hooks.post('/on-install', (req, res) => {
-    const ruleName = 'auth0-slack-mfa';
     const tasks = [
-      req.auth0
-        .rules
-        .getAll()
-        .then(rules => {
-          const payload = {
-            name: ruleName,
-            script: compileRule(config, ruleName)
-          };
-
-          const rule = _.find(rules, { name: ruleName });
-          if (rule) {
-            return req.auth0.rules.update({ id: rule.id }, payload);
-          }
-
-          return req.auth0.rules.create({ stage: 'login_success', ...payload });
-        })
-        .then(() => {
-          logger.debug('Slack MFA rule deployed.');
-          return Promise.resolve();
-        }),
-
-      buildCollection(config)
-        .then(() => {
-          logger.debug('Token whitelist collection successfully created.');
-          return Promise.resolve();
-        })
+      rules.provision(req.auth0),
+      mongodb.provision()
     ];
 
     Promise.all(tasks)
-    .then((values) => {
-      res.sendStatus(204);
-    })
-    .catch((err) => {
-      logger.error(err);
-      res.sendStatus(400);
-    });
-  });
-
-  hooks.delete('/on-uninstall', (req, res) => {
-    const ruleName = 'auth0-slack-mfa';
-    req.auth0
-      .rules
-      .getAll()
-      .then(rules => {
-        const rule = _.find(rules, { name: ruleName });
-        if (rule) {
-          req.auth0.rules.delete({ id: rule.id });
-        }
-      })
-      .then(() => {
-        logger.debug('Slack MFA rule deleted.');
+      .then((values) => {
         res.sendStatus(204);
       })
       .catch((err) => {
-        logger.debug('Error deleting Slack MFA rule.');
-        logger.error(err);
+        res.sendStatus(400);
+      });
+  });
 
+  /**
+   * Hook is run once the extension is uninstalled.  This removes the slack-mfa-rule
+   * and the mongo collection ('Token').
+   */
+  hooks.delete('/on-uninstall', (req, res) => {
+    const task = [
+      rules.remove(req.auth0),
+      mongodb.remove()
+    ];
+
+    Promise.all(tasks)
+      .then((values) => {
+        res.sendStatus(204);
+      })
+      .catch((err) => {
         // Even if deleting fails, we need to be able to uninstall the extension.
         res.sendStatus(204);
       });
