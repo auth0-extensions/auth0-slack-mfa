@@ -12,7 +12,9 @@ const compileRule = (rule) =>
     updateTime: () => new Date().toISOString()
   });
 
-module.exports.remove = (auth0) => auth0
+module.exports.remove = (auth0) => {
+  const ruleName = 'slack-mfa-rule';
+  return auth0
   .rules
   .getAll()
   .then(rules => {
@@ -27,8 +29,8 @@ module.exports.remove = (auth0) => auth0
   .catch((err) => {
     logger.debug('Error creating Slack MFA rule.');
     logger.error(err);
-    throw err;
   });
+};
 
 module.exports.provision = (auth0) => {
   const ruleName = 'slack-mfa-rule';
@@ -38,7 +40,7 @@ module.exports.provision = (auth0) => {
     .then(rules => {
       const payload = {
         name: ruleName,
-        script: compileRule(config, ruleName)
+        script: compileRule(ruleName)
       };
 
       const rule = _.find(rules, { name: ruleName });
@@ -54,6 +56,5 @@ module.exports.provision = (auth0) => {
     .catch((err) => {
       logger.debug('Error creating Slack MFA rule.');
       logger.error(err);
-      throw err;
     });
 };

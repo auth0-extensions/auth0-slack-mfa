@@ -11,7 +11,7 @@ const connectToDb = (connectionString) => new Promise(
   }));
 
 
-const createCollection = (db) =>new Promise(
+const createCollection = (db) => new Promise(
   (resolve, reject) => {
     db.createCollection('Token', (err, collection) => {
       if (err) {
@@ -40,7 +40,7 @@ const createTtlIndex = (collection) => new Promise(
     });
   });
 
-const createIdIndex = (collection) => Promise(
+const createIdIndex = (collection) => new Promise(
   (resolve, reject) => {
     const key =  { _id: 1 };
     const options = { name: '_id_' };
@@ -56,9 +56,11 @@ const createIdIndex = (collection) => Promise(
 
 const deleteCollection = (db) => new Promise(
   (resolve, reject) => {
-    db.remove('Token', (err, count) => {
+    db.dropCollection('Token', (err, result) => {
       if (err) {
-        return reject('Failed to remove the collection');
+        // Despite this being an error, let's just log it an continue.
+        // This is likely an issue if the collection doesn't exist.
+        logger.error('Failed to delete collection.');
       }
 
       return resolve(db);
@@ -67,12 +69,23 @@ const deleteCollection = (db) => new Promise(
 
 module.exports.remove = () => {
   const connectionString = config('MONGO_CONNECTION_STRING');
-  return deleteCollection(connectionString)
-    .then(() => {
+  let db;
+
+  return connectToDb(connectionString)
+  .then(connection => {
+      db = connection;
+      return db;
+    })
+    .then(deleteCollection)
+    .then((db) => {
+      if(db) {
+        db.close();
+      }
       logger.debug('Token whitelist collection successfully deleted.');
     })
     .catch((err) => {
-      logger.debug('Token whitelist collectil failed to delete.');
+      db.close();
+      logger.debug('Token whitelist collection failed to delete.');
       logger.error(err);
       throw err;
     });
@@ -85,7 +98,7 @@ module.exports.provision = () => {
   return connectToDb(connectionString)
     .then(connection => {
       db = connection;
-      return Promise.resolve(db);
+      return db;
     })
     .then(createCollection)
     .then(createTtlIndex)
@@ -96,7 +109,7 @@ module.exports.provision = () => {
       }
       logger.debug('Token whitelist collection successfully created.');
     })
-    .catch((err) => { 
+    .catch((err) => {
       db.close(); 
       logger.debug('There was a failure trying to provision the token whitelist collection.');
       logger.error(err);

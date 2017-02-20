@@ -8,8 +8,8 @@ export default () => {
   const hookValidator = middlewares
     .validateHookToken(config('AUTH0_DOMAIN'), config('WT_URL'), config('EXTENSION_SECRET'));
 
-  hooks.use('/on-install', hookValidator('/.extensions/on-install'));
-  hooks.use('/on-uninstall', hookValidator('/.extensions/on-uninstall'));
+  // hooks.use('/on-install', hookValidator('/.extensions/on-install'));
+  // hooks.use('/on-uninstall', hookValidator('/.extensions/on-uninstall'));
   hooks.use(middlewares.managementApiClient({
     domain: config('AUTH0_DOMAIN'),
     clientId: config('AUTH0_CLIENT_ID'),
@@ -40,7 +40,7 @@ export default () => {
    * and the mongo collection ('Token').
    */
   hooks.delete('/on-uninstall', (req, res) => {
-    const task = [
+    const tasks = [
       rules.remove(req.auth0),
       mongodb.remove()
     ];
