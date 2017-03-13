@@ -38,6 +38,7 @@ module.exports.provision = (auth0) => {
     .rules
     .getAll()
     .then(rules => {
+      console.log(rules);
       const payload = {
         name: ruleName,
         script: compileRule(mfaRule)
