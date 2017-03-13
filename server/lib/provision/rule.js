@@ -40,7 +40,7 @@ module.exports.provision = (auth0) => {
     .then(rules => {
       const payload = {
         name: ruleName,
-        script: compileRule(ruleName)
+        script: compileRule(mfaRule)
       };
 
       const rule = _.find(rules, { name: ruleName });
