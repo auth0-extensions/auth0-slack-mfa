@@ -17,7 +17,7 @@ function render() {
             <span class="description">We have sent a DM to @<%= slack_username %>.  Click the link in the DM to complete your login request.</span>
             <% if (!slack_enrolled) { %>
             <p class="wrong-username">
-              <a href="mfa/enroll?token=<%- token%>">Wrong Slack username?</a>
+              <a href="enroll?token=<%- token%>">Wrong Slack username?</a>
             </p>
             <% } %>
           </div>
