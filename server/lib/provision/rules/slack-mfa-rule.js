@@ -75,7 +75,7 @@ function (user, context, callback) {
       return db.collection('Token').update(upsertFilter, tokenRecord, { upsert: true }, function (err, record) {
         if (err) { throw new Error('Failed to whitelist JWT.'); }
 
-      var route = user.user_metadata && user.user_metadata.slack_mfa_username ? "/mfa" : "/mfa/enroll";
+      var route = user.user_metadata && user.user_metadata.slack_mfa_username ? "/mfa/mfa" : "/mfa/enroll";
         context.redirect = { url: mfaUrl + route + '?token=' + token };
         return callback(null, user, context);
       });
